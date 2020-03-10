@@ -1,18 +1,18 @@
 # Motor Control in Cedar
 
-This Cedar plugin allow the control of the Gummi Arm through a ROS Publisher
+This Cedar plugin allow to send motor commands through YARP
 
 Everything you want to know about DFT -> https://dynamicfieldtheory.org/
 
 Cedar is the C++ Framework implementing the concepts of DFT -> https://cedar.ini.rub.de/
 
-Everything you need to know about ROS -> http://www.ros.org/
+Everything you need to know about YARP https://www.yarp.it/
 
 ## Getting Started
 
-The plugin is a widget reading outputs from a Neural Field and publishing the data to the motors of the Gummi.
+The plugin is a widget reading outputs from a Neural Field and publishing the datas to a yarp topic.
 
-You can define directly in the Qt Widget if you want to publish a Float64 on a topic or a JoinState message.
+You can define directly in the Qt Widget the destination port.
 
 Of course you can adapt it to publish commands to any topics, but you might want to change the scale or format of the datas received from the Neural Field.
 
@@ -27,19 +27,12 @@ You can't use a precompiled version of Cedar to compile and run the plugin.
 
 I suggest reading about how to create a plugin in Cedar first, it will greatly help to understand how it works : https://cedar.ini.rub.de/tutorials/writing_custom_code_for_cedar/
 
-Install ROS : http://wiki.ros.org/ROS/Installation
-
-The code was tested on ROS Kinetic Kame and ROS Melodic Morenia
-
-**Warning**
-
-ROS and Cedar are a bit to powerful to run on the same computer (if you have a big DFT model and a complex robot), so I recommend using 2 different computers.
-
+The code was tested with cedar and the iCub Simulator
 ### Installing
 
 First clone the repository :
 
-`https://github.com/rouzinho/MotorHeadDft.git`
+`https://github.com/rouzinho/Motor2DYarp.git`
 
 In the project.conf, change the CEDAR_HOME directory to your own :
 
@@ -57,11 +50,7 @@ Finally start the compilation :
 
 `make`
 
-You should see the plugin under the name libEarListener.so in the build/ repository
-
-## Before Running the plugin
-
-Start a ROS Init() Thread : https://github.com/rouzinho/RosInitCedar
+You should see the plugin under the name libMotorTwoDim.so in the build/ repository
 
 ## Run the plugin
 
@@ -81,14 +70,14 @@ Drag the MotorHead widget into the architecture panel. Connect the output of a s
 ## Work in progress
 
 
-The plugin is more like an artefact binding sensors to DFT.
+The plugin is more like an artefact binding DFT to the iCub robot.
 Work in progress to use Qt elements to control the settings.
 
 
 
 ## Authors
 
-Quentin Houbre - Tampere University of Technology
+Quentin Houbre - Tampere University
 
 ## License
 
