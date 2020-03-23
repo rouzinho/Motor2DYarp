@@ -179,24 +179,6 @@ double MotorTwoDim::setPositionY(double position)
   return res;
 }
 
-//specificc to this size - angle to field coordinates transform
-
-double MotorTwoDim::getPositionX(double position)
-{
-   double a = sizeX / (upper_x - lower_x);
-   double res = position * a + 50;
-
-   return res;
-}
-
-double MotorTwoDim::getPositionY(double position)
-{
-   double a = sizeY / (upper_y - lower_y);
-   double res = position * a + 50;
-
-   return res;
-}
-
 void MotorTwoDim::reCompute()
 {
    toler = this->mTolerance->getValue();

@@ -95,8 +95,6 @@ private:
   void reset();
   double setPositionX(double position);
   double setPositionY(double position);
-  double getPositionX(double position);
-  double getPositionY(double position);
 
   //--------------------------------------------------------------------------------------------------------------------
   // members
