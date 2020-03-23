@@ -56,13 +56,10 @@ using namespace std;
 MotorTwoDim::MotorTwoDim()
 :
 cedar::proc::Step(true),
-//mOutput(new cedar::aux::MatData(cv::Mat::zeros(1, 1, CV_32F))),
 mInputX(new cedar::aux::MatData(cv::Mat::zeros(10, 10, CV_32F))),
 mTopic(new cedar::aux::StringParameter(this, "Yarp Destination", "")),
 mTolerance(new cedar::aux::IntParameter(this, "Tolerance New Motion",1)),
-//mLimb(new cedar::aux::StringParameter(this, "Limb Name", "")),
-mSizeX(new cedar::aux::IntParameter(this, "SizeX",100)),
-mSizeY(new cedar::aux::IntParameter(this, "SizeY",100)),
+mFixedZ(new cedar::aux::DoubleParameter(this, "fixed Z",0.2)),
 mReconnect(new cedar::aux::DoubleParameter(this,"reconnect",0.0)),
 mLowerX(new cedar::aux::DoubleParameter(this,"lower x",-1.0)),
 mUpperX(new cedar::aux::DoubleParameter(this,"upper x",1.0)),
@@ -70,34 +67,22 @@ mLowerY(new cedar::aux::DoubleParameter(this,"lower y",-1.0)),
 mUpperY(new cedar::aux::DoubleParameter(this,"upper y",1.0))
 {
 this->declareInput("F", true);
-//this->declareInput("Y",true);
-//this->declareOutput("output",mOutput);
 
-sizeX = 10;
-sizeY = 10;
 valPeak = 0;
 upper_x = 1;
 lower_x = -1;
 upper_y = 1;
 lower_y = -1;
-begin_peakX = 0;
-end_peakX = 0;
-begin_peakY = 0;
-end_peakY = 0;
-is_peakX = false;
-is_peakY = false;
+
 field_pos = 0;
 minX = sizeX;
 minY = sizeY;
 maxX = 0;
 maxY = 0;
 toler = 1;
-//this->connect(this->mCenter.get(), SIGNAL(valueChanged()), this, SLOT(reCompute()));
 this->connect(this->mTopic.get(), SIGNAL(valueChanged()), this, SLOT(reName()));
-//this->connect(this->mLimb.get(), SIGNAL(valueChanged()), this, SLOT(reName()));
 this->connect(this->mReconnect.get(), SIGNAL(valueChanged()), this, SLOT(reConnectYarp()));
-this->connect(this->mSizeX.get(), SIGNAL(valueChanged()), this, SLOT(reCompute()));
-this->connect(this->mSizeY.get(), SIGNAL(valueChanged()), this, SLOT(reCompute()));
+this->connect(this->mFixedZ.get(), SIGNAL(valueChanged()), this, SLOT(fixZ()));
 this->connect(this->mTolerance.get(), SIGNAL(valueChanged()), this, SLOT(reCompute()));
 this->connect(this->mLowerX.get(), SIGNAL(valueChanged()), this, SLOT(reName()));
 this->connect(this->mUpperX.get(), SIGNAL(valueChanged()), this, SLOT(reName()));
@@ -108,25 +93,21 @@ this->connect(this->mUpperY.get(), SIGNAL(valueChanged()), this, SLOT(reName()))
 //----------------------------------------------------------------------------------------------------------------------
 // methods
 //----------------------------------------------------------------------------------------------------------------------
-//generic publisher. If limbName is there, a JointCommand will be published. Otherwise it's publishing a Float64 on the topic name.
+//
 void MotorTwoDim::compute(const cedar::proc::Arguments&)
 {
 
-  //field_pos = getPosition(old_pos);
   cv::Mat& field = mInputX->getData();
-  //cv::Mat& sumY = mInputY->getData();
   cedar::aux::ConstDataPtr opX = this->getInputSlot("F")->getData();
-  //cedar::aux::ConstDataPtr opY = this->getInputSlot("Y")->getData();
   field = opX->getData<cv::Mat>();
-  //sumY = opY->getData<cv::Mat>();
-  //auto peak_detector = boost::dynamic_pointer_cast<cedar::aux::ConstMatData>(this->getInput("peak stop"));
-  //peak = cedar::aux::math::getMatrixEntry<double>(peak_detector->getData(), 0, 0);
+  cv::Size s = field.size();
+  sizeX = s.width;
+  sizeY = s.height;
 
-
-  /*cout<<field;
-  cout<<"\n\n";
-  cout<<"-------------------------";
-  cout<<"\n\n";*/
+  maxX = 0;
+  maxY = 0;
+  minX = sizeX;
+  minY = sizeY;
 
   for(int i = 0;i < sizeY;i++)
   {
@@ -168,15 +149,13 @@ void MotorTwoDim::compute(const cedar::proc::Arguments&)
      out.clear();
      out.addFloat32(cartX);
      out.addFloat32(cartY);
+     out.addFloat32(cartZ);
      outPort.write(true);
   }
 
   old_posX = posX;
   old_posY = posY;
-  maxX = 0;
-  maxY = 0;
-  minX = sizeX;
-  minY = sizeY;
+
 
 }
 
@@ -220,8 +199,6 @@ double MotorTwoDim::getPositionY(double position)
 
 void MotorTwoDim::reCompute()
 {
-   sizeX = this->mSizeX->getValue();
-   sizeY = this->mSizeY->getValue();
    toler = this->mTolerance->getValue();
    minX = sizeX;
    minY = sizeY;
@@ -244,9 +221,12 @@ void MotorTwoDim::reConnectYarp()
   yarp.connect(outPort.getName(),inPort.getName());
 }
 
+void MotorTwoDim::fixZ()
+{
+   cartZ = this->mFixedZ->getValue();
+}
+
 void MotorTwoDim::reset()
 {
-
-	//ros::shutdown();
 
 }

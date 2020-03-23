@@ -77,6 +77,7 @@ public:
 public slots:
   // none yet
   void reCompute();
+  void fixZ();
   void reName();
   void reConnectYarp();
   //--------------------------------------------------------------------------------------------------------------------
@@ -106,13 +107,10 @@ private:
   //!@brief this is the output of the computation (in this case, the summed inputs
   cedar::aux::MatDataPtr mOutput;
   cedar::aux::MatDataPtr mInputX;
-  cedar::aux::MatDataPtr mInputY;
   cedar::aux::StringParameterPtr mTopic;
   cedar::aux::IntParameterPtr mTolerance;
   cedar::aux::StringParameterPtr mLimb;
-  cedar::aux::IntParameterPtr mSizeX;
-  cedar::aux::IntParameterPtr mSizeY;
-
+  cedar::aux::DoubleParameterPtr mFixedZ;
   cedar::aux::DoubleParameterPtr mReconnect;
   cedar::aux::DoubleParameterPtr mLowerX;
   cedar::aux::DoubleParameterPtr mUpperX;
@@ -128,6 +126,7 @@ private:
   //ros::Publisher pub;
   //geometry_msgs::Pose pose_ee;
   float valPeak;
+  float cartZ;
   double posX;
   double old_posX;
   double posY;
@@ -148,13 +147,7 @@ private:
   int minY;
   int maxX;
   int maxY;
-  bool is_peakX;
-  bool is_peakY;
 
-  int begin_peakX;
-  int end_peakX;
-  int begin_peakY;
-  int end_peakY;
   //--------------------------------------------------------------------------------------------------------------------
   // parameters
   //--------------------------------------------------------------------------------------------------------------------
